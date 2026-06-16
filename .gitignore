@@ -1,0 +1,14 @@
+# Visual Studio Build Artifacts
+.vs/
+Debug/
+Release/
+x64/
+x86/
+
+# Precompiled headers and cache files specifically
+*.ipch
+*.db
+*.opendb
+
+# Your FCFS temporary assignment log outputs
+*.txt
