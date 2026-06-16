@@ -1,20 +1,33 @@
-// FCFSScheduler.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <iostream>
+#include "FCFSScheduler.h"
+#include "Process.h"
 
-int main()
-{
-    std::cout << "Hello World!\n";
+int main() {
+    FCFSScheduler scheduler(4); // 4 cores
+
+    // Create some test processes and add them to the scheduler
+    for (int i = 1; i <= 5; i++) {
+        auto process = std::make_shared<Process>("process" + std::to_string(i));
+        scheduler.addProcess(process);
+        std::cout << "Added: " << process->name << "\n";
+    }
+
+    // Run the scheduler (blocks until all processes are done)
+    std::thread runThread([&scheduler]() {
+        scheduler.run();
+    });
+
+    // Give it time to finish then shut down
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    scheduler.shutdown();
+
+    runThread.join();
+
+    // Print finished processes
+    std::cout << "\nFinished processes:\n";
+    for (auto& p : scheduler.finishedProcesses) {
+        std::cout << "  " << p->name << "\n";
+    }
+
+    return 0;
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
