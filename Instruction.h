@@ -8,5 +8,5 @@ class Instruction {
 private:
 	std::time_t date_created;
 	std::string print_string;
-	std::int assigned_core;
+	int assigned_core;
 };
