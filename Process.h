@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include <memory>
-#include "Instruction.h"
 
 enum State {
     NEW,
@@ -41,6 +40,10 @@ public:
     void setCore(int coreNo) { assignedCore = coreNo; }
     void setState(State s) { state = s; }
     
+    int getCurrentInstructionIndex() const { return currentInstructionIndex; }
+
+    const std::vector<std::string>& getInstructions() const { return instruction_list; }
+
     // Simulates executing one print command line
     void incrementInstruction() {
         if (currentInstructionIndex < instruction_list.size()) {

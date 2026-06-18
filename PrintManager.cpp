@@ -1,35 +1,29 @@
 #include "PrintManager.h"
 #include "Process.h"
-#include "Instruction.h"
 #include <fstream>
 #include <chrono>
 #include <iomanip>
 #include <sstream>
 #include <ctime>
 
-
-PrintManager::PrintManager() : isEnabled(true) {}
-
 PrintManager& PrintManager::getInstance() {
     static PrintManager instance;
     return instance;
 }
 
-void PrintManager::setEnabled(bool status) {
-    isEnabled = status;
-}
-// TODO: will revise core parameter later
-void PrintManager::logInstruction(const Process& process,  int coreId) {
-    if (!isEnabled) return;
-
-    // Guard the file pipeline across the 4 active core threads
+void PrintManager::logInstruction(const Process& process, int coreId) {
     std::lock_guard<std::mutex> lock(printMutex);
 
-    // Extract strings cleanly from our refined object parameters
     std::string processName = process.getName();
-    std::string commandText = instruction.getCommandText();
+    int idx = process.getCurrentInstructionIndex();
+    const auto& instructions = process.getInstructions();
 
-    // Capture the exact moment of core CPU execution
+    std::string commandText = "No Instruction";
+    if (idx >= 0 && idx < instructions.size()) {
+        commandText = instructions[idx];
+    }
+
+    // Capture time
     auto now = std::chrono::system_clock::now();
     auto time_t_now = std::chrono::system_clock::to_time_t(now);
     auto duration = now.time_since_epoch();
@@ -47,9 +41,36 @@ void PrintManager::logInstruction(const Process& process,  int coreId) {
         << "." << std::setfill('0') << std::setw(3) << ms.count()
         << std::put_time(&timeInfo, " %p)");
 
-    std::ofstream file(processName + ".txt", std::ios::app);
-    if (file.is_open()) {
-        file << ts.str() << " Core " << coreId << ": " << commandText << "\n";
-        file.close();
+    std::stringstream logLine;
+    logLine << ts.str() << " Core " << coreId << ": " << commandText;
+
+    memoryLogs[processName].push_back(logLine.str());
+}
+
+void PrintManager::flushToFiles() {
+    std::lock_guard<std::mutex> lock(printMutex);
+
+    if (memoryLogs.empty()) {
+        std::cout << "No logs found in memory to print.\n";
+        return;
     }
+
+    std::cout << "Dumping logs to files... Please wait.\n";
+
+    for (const auto& [processName, lines] : memoryLogs) {
+        std::string filename = processName + ".txt";
+        std::ofstream file(filename, std::ios::trunc); // Overwrites fresh on manual trigger
+
+        if (file.is_open()) {
+            file << "Process_name: " << processName << "\n";
+            file << "Logs:\n";
+
+            for (const auto& line : lines) {
+                file << line << "\n";
+            }
+            file.close();
+        }
+    }
+
+    std::cout << "Successfully generated text files for " << memoryLogs.size() << " processes.\n";
 }

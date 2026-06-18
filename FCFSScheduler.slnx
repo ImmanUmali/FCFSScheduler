@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="FCFSScheduler.vcxproj" />
+  <Project Path="FCFSScheduler.vcxproj" Id="6f181b49-6223-42bc-b585-1a18b2d8138d" />
 </Solution>

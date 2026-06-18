@@ -4,6 +4,7 @@
 #include <memory>
 #include <ctime>
 #include "ProcessScheduler.h"
+#include "PrintManager.h"
 
 // Helper function to get current timestamp 
 std::string getCurrentTimestamp() {
@@ -45,6 +46,9 @@ int main() {
         if (command == "screen -ls") {
             scheduler.printScreenLS();
         } 
+        else if (command == "print") { 
+            PrintManager::getInstance().flushToFiles();
+        }
         else if (command == "exit") {
             scheduler.shutdown(); 
             std::cout << "OS Emulator with 4 Cores closed.\n";

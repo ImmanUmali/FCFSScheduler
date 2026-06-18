@@ -139,7 +139,16 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Core.cpp" />
     <ClCompile Include="FCFSScheduler.cpp" />
+    <ClCompile Include="PrintManager.cpp" />
+    <ClCompile Include="ProcessScheduler.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Core.h" />
+    <ClInclude Include="PrintManager.h" />
+    <ClInclude Include="Process.h" />
+    <ClInclude Include="ProcessScheduler.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

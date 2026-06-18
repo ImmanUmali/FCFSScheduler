@@ -1,9 +1,9 @@
 #include "ProcessScheduler.h"
+#include "PrintManager.h"
 #include <chrono>
 #include <iomanip>
 
 ProcessScheduler::ProcessScheduler(int numCores) : numCores(numCores) {
-    // Instantiate the individual Core components
     for (int i = 0; i < numCores; i++) {
         cpuCores.push_back(std::make_shared<Core>(i));
     }
@@ -43,11 +43,12 @@ void ProcessScheduler::start() {
                 // Core processes instructions
                 while (!process->isFinished() && !stop) {
                     std::this_thread::sleep_for(std::chrono::milliseconds(50)); // Simulated CPU burst
-                    
+
                     std::lock_guard<std::mutex> lock(mtx);
-                    myCore->stepExecution(); 
-                    
-                    // Add print logging here
+
+                    PrintManager::getInstance().logInstruction(*process, coreId);
+
+                    myCore->stepExecution();
                 }
 
                 {
